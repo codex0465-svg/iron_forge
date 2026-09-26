@@ -7,19 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0A0A0A;
-  --card: #111111;
-  --elevated: #181818;
-  --red: #E8200A;
-  --red-dark: #a01508;
-  --gold: #C8A04A;
-  --green: #2ECC71;
-  --blue: #3498DB;
-  --text: #E8E8E0;
-  --muted: #999999;
-  --border: #2A2A2A;
-}
+:root{--bg:#0A0A0A;--card:#111111;--elevated:#181818;--red:#E8200A;--red-dark:#a01508;--gold:#C8A04A;--green:#2ECC71;--blue:#3498DB;--text:#E8E8E0;--muted:#999999;--border:#2A2A2A;--nav-bg:rgba(10,10,10,0.88);--shadow:rgba(0,0,0,0.5)}
+html[data-theme="light"]{--bg:#F2F2F0;--card:#FFFFFF;--elevated:#EBEBEB;--red:#D41A06;--red-dark:#a01508;--gold:#A87C28;--green:#1EA85A;--blue:#2176AE;--text:#111111;--muted:#666666;--border:#DEDEDE;--nav-bg:rgba(242,242,240,0.92);--shadow:rgba(0,0,0,0.12)}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;min-height:100vh}
@@ -29,7 +18,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font
 ::-webkit-scrollbar-thumb:hover{background:var(--red-dark)}
 
 /* NAV */
-#navbar{position:fixed;top:0;left:0;right:0;height:56px;background:rgba(10,10,10,0.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:1000;display:flex;align-items:center;padding:0 24px;gap:24px}
+#navbar{position:fixed;top:0;left:0;right:0;height:56px;background:var(--nav-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:1000;display:flex;align-items:center;padding:0 24px;gap:24px}
 .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--red);letter-spacing:3px;cursor:pointer;white-space:nowrap}
 .nav-logo span{color:var(--gold)}
 .nav-links{display:flex;gap:2px;flex:1;justify-content:center;flex-wrap:wrap}
@@ -224,6 +213,10 @@ hr{border:none;border-top:1px solid var(--border);margin:24px 0}
 .spacer{height:16px}
 .spacer-lg{height:32px}
 
+/* THEME TOGGLE */
+#theme-toggle{background:var(--elevated);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+#theme-toggle:hover{border-color:var(--red);transform:rotate(20deg)}
+
 /* HAMBURGER */
 #hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:6px;width:36px;height:36px;margin-left:auto;flex-shrink:0}
 #hamburger span{display:block;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
@@ -280,6 +273,7 @@ hr{border:none;border-top:1px solid var(--border);margin:24px 0}
     <span class="nav-link" data-page="setup" onclick="goPage('setup')">Setup</span>
     <span class="nav-link" data-page="about" onclick="goPage('about')">Guide</span>
   </div>
+  <button id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
   <button id="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
@@ -963,6 +957,22 @@ function typewriter(el,text,speed=12){
     if(i<text.length){el.insertBefore(document.createTextNode(text[i++]),cursor);}
     else{clearInterval(iv);cursor.remove();}
   },speed);
+}
+
+// ===== THEME =====
+function toggleTheme(){
+  const html=document.documentElement;
+  const isLight=html.getAttribute('data-theme')==='light';
+  const next=isLight?'dark':'light';
+  html.setAttribute('data-theme',next);
+  document.getElementById('theme-toggle').textContent=next==='light'?'☀️':'🌙';
+  localStorage.setItem('if_theme',next);
+}
+function loadTheme(){
+  const saved=localStorage.getItem('if_theme')||'dark';
+  document.documentElement.setAttribute('data-theme',saved);
+  const btn=document.getElementById('theme-toggle');
+  if(btn)btn.textContent=saved==='light'?'☀️':'🌙';
 }
 
 // ===== MOBILE MENU =====
@@ -1719,6 +1729,7 @@ function filterExercises(filter,btn){
 // ===== INIT =====
 
 window.addEventListener('DOMContentLoaded',()=>{
+  loadTheme();
   fillSetupFromProfile();
   const p=getProfile();
   if(p){goPage('dashboard');}
